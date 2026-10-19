@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💌 Приглашение на свидание</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #a18cd1 100%);
+    background-size: 400% 400%;
+    animation: bgMove 12s ease infinite;
+    padding: 20px;
+    transition: background 0.6s ease;
+  }
+
+  @keyframes bgMove {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  /* --- Темы фона --- */
+  body.theme-default {
+    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #a18cd1 100%);
+    background-size: 400% 400%;
+    animation: bgMove 12s ease infinite;
+  }
+
+  body.theme-romantic {
+    background: linear-gradient(135deg, #2b0a1e 0%, #6b1e3e 40%, #c0396b 100%);
+    background-size: 400% 400%;
+    animation: bgMove 14s ease infinite;
+  }
+
+  body.theme-forest {
+    background: linear-gradient(135deg, #1a3a1a 0%, #2d5a2d 45%, #6b8f5e 100%);
+    background-size: 400% 400%;
+    animation: bgMove 16s ease infinite;
+  }
+
+  .card {
+    position: relative;
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    padding: 36px 28px;
+    max-width: 480px;
+    width: 100%;
+    min-height: 480px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    text-align: center;
+    overflow: hidden;
+    transition: background 0.5s ease;
+  }
+
+  body.theme-romantic .card {
+    background: rgba(40, 10, 25, 0.88);
+    color: #fce4ec;
+  }
+
+  body.theme-romantic h1,
+  body.theme-romantic .question { color: #ffb6c1; }
+  body.theme-romantic .subtitle,
+  body.theme-romantic .hint { color: #d4a0b0; }
+  body.theme-romantic .date-option { background: rgba(80, 20, 40, 0.6); }
+  body.theme-romantic .date-option .date-main { color: #ffb6c1; }
+  body.theme-romantic .date-option .weather { color: #e0b0c0; }
+  body.theme-romantic .result { background: rgba(80, 20, 40, 0.6); color: #fce4ec; }
+  body.theme-romantic .result b { color: #ffb6c1; }
+  body.theme-romantic .love-note {
+    background: linear-gradient(135deg, #4a1025, #6b1e3e);
+    color: #ffb6c1;
+  }
+  body.theme-romantic button.ghost {
+    background: rgba(80, 20, 40, 0.6);
+    color: #ffb6c1;
+  }
+
+  body.theme-forest .card {
+    background: rgba(15, 35, 15, 0.9);
+    color: #e8f5e9;
+  }
+
+  body.theme-forest h1,
+  body.theme-forest .question { color: #a5d6a7; }
+  body.theme-forest .subtitle,
+  body.theme-forest .hint { color: #90b890; }
+  body.theme-forest .date-option { background: rgba(30, 60, 30, 0.6); }
+  body.theme-forest .date-option .date-main { color: #a5d6a7; }
+  body.theme-forest .date-option .weather { color: #b0d0b0; }
+  body.theme-forest .result { background: rgba(30, 60, 30, 0.6); color: #e8f5e9; }
+  body.theme-forest .result b { color: #a5d6a7; }
+  body.theme-forest .love-note {
+    background: linear-gradient(135deg, #1a3a1a, #2d5a2d);
+    color: #a5d6a7;
+  }
+  body.theme-forest button.ghost {
+    background: rgba(30, 60, 30, 0.6);
+    color: #a5d6a7;
+  }
+
+  h1 {
+    font-size: 1.6rem;
+    color: #c0396b;
+    margin-bottom: 8px;
+  }
+
+  .subtitle {
+    color: #8a6a8a;
+    font-size: 0.95rem;
+    margin-bottom: 22px;
+  }
+
+  .question {
+    font-size: 1.15rem;
+    color: #3a2a3a;
+    margin-bottom: 20px;
+    line-height: 1.5;
+    min-height: 56px;
+  }
+
+  .buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 8px;
+  }
+
+  button {
+    border: none;
+    border-radius: 14px;
+    padding: 14px 18px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #fff;
+    background: linear-gradient(135deg, #e8567a, #b0447a);
+    box-shadow: 0 6px 18px rgba(200, 60, 120, 0.35);
+  }
+
+  button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(200, 60, 120, 0.5);
+  }
+
+  button:active { transform: translateY(0); }
+
+  button.secondary {
+    background: linear-gradient(135deg, #8e6cb0, #5b5bd6);
+    box-shadow: 0 6px 18px rgba(100, 90, 200, 0.35);
+  }
+
+  button.secondary:hover {
+    box-shadow: 0 10px 24px rgba(100, 90, 200, 0.5);
+  }
+
+  button.ghost {
+    background: #f0e6f0;
+    color: #8a4a7a;
+    box-shadow: none;
+  }
+
+  button.ghost:hover { background: #e8d8e8; box-shadow: none; }
+
+  #btn-no {
+    position: relative;
+    transition: left 0.25s ease, top 0.25s ease, transform 0.2s ease;
+  }
+
+  #btn-no.floating {
+    position: absolute;
+    z-index: 5;
+    width: 140px;
+  }
+
+  .attempts {
+    font-size: 0.9rem;
+    color: #a08aa8;
+    margin-top: 14px;
+    min-height: 22px;
+    font-weight: 500;
+  }
+
+  .attempts b { color: #c0396b; }
+
+  body.theme-romantic .attempts { color: #d4a0b0; }
+  body.theme-romantic .attempts b { color: #ffb6c1; }
+  body.theme-forest .attempts { color: #90b890; }
+  body.theme-forest .attempts b { color: #a5d6a7; }
+
+  /* --- Даты + погода --- */
+  .date-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 14px;
+    background: #fdf2f8;
+    margin-bottom: 8px;
+    transition: background 0.4s ease;
+  }
+
+  .date-option .date-main {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #c0396b;
+  }
+
+  .date-option .weather {
+    font-size: 0.85rem;
+    color: #7a6a7a;
+    line-height: 1.4;
+  }
+
+  .result {
+    font-size: 1.05rem;
+    color: #3a2a3a;
+    line-height: 1.7;
+    text-align: left;
+    background: #fdf2f8;
+    border-radius: 16px;
+    padding: 18px;
+    margin-top: 16px;
+    transition: background 0.4s ease;
+  }
+
+  .result b { color: #c0396b; }
+
+  .love-note {
+    margin-top: 18px;
+    padding: 16px;
+    background: linear-gradient(135deg, #fff0f5, #ffe4ec);
+    border-radius: 16px;
+    font-size: 1.1rem;
+    color: #c0396b;
+    font-weight: 700;
+    line-height: 1.6;
+    transition: background 0.4s ease;
+  }
+
+  .hint {
+    font-size: 0.85rem;
+    color: #a08aa8;
+    margin-top: 16px;
+  }
+
+  .hearts {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+  }
+
+  .heart {
+    position: absolute;
+    font-size: 22px;
+    animation: floatUp 6s linear infinite;
+    opacity: 0;
+  }
+
+  @keyframes floatUp {
+    0%   { transform: translateY(100vh) scale(0.6); opacity: 0; }
+    10%  { opacity: 0.8; }
+    100% { transform: translateY(-10vh) scale(1.1); opacity: 0; }
+  }
+</style>
+</head>
+<body class="theme-default">
+
+<div class="hearts" id="hearts"></div>
+
+<div class="card" id="card">
+  <h1>💌 Приглашение на свидание</h1>
+  <p class="subtitle">Оренбург · небольшой квест, принцесса</p>
+
+  <div id="app"></div>
+</div>
+
+<script>
+// --- Состояние ---
+const state = {
+  step: "agreement",
+  answers: {},
+  escapes: 0,
+};
+
+const app = document.getElementById("app");
+const card = document.getElementById("card");
+const body = document.body;
+
+// --- Управление темой фона ---
+function setTheme(theme) {
+  body.className = "theme-" + theme;
+}
+
+// --- Погода в Оренбурге (ориентировочные данные из открытых источников) ---
+const weatherData = {
+  "31.10.2026": "🌡️ +9…+10°C · ветер 7 м/с · пасмурно, вероятность осадков 100% [citation:7][citation:4]",
+  "01.11.2026": "🌡️ +5…+6°C · ветер 3–5 м/с · дождь, вероятность 79% [citation:6][citation:11]",
+};
+
+// --- Рендер ---
+function render(question, buttonsHtml, extraHtml = "") {
+  app.innerHTML = `
+    <div class="question">${question}</div>
+    <div class="buttons">${buttonsHtml}</div>
+    ${extraHtml}
+  `;
+}
+
+function renderResult() {
+  const a = state.answers;
+  app.innerHTML = `
+    <div class="question">💐 Итог нашего свидания:</div>
+    <div class="result">
+      📅 Дата: <b>${a.day}</b><br>
+      📍 Место: <b>${a.place}</b><br>
+      ${a.park ? `🌳 Парк: <b>${a.park}</b><br>` : ""}
+      ${a.cuisine ? `🍽️ Кухня: <b>${a.cuisine}</b><br>` : ""}
+      ⏰ Время: <b>${a.time}</b><br>
+      🚗 Транспорт: <b>${a.transport}</b>
+    </div>
+    <div class="love-note">❤️ И самое главное…<br>Я тебя очень люблю. 💐</div>
+    <div class="buttons" style="margin-top:16px;">
+      <button class="ghost" onclick="restart()">🔄 Пройти заново</button>
+    </div>
+    <p class="hint">Тогда до встречи, принцесса! 💐</p>
+  `;
+  saveAnswers();
+}
+
+// --- Шаг 1: согласие ---
+function showAgreement() {
+  state.step = "agreement";
+  state.escapes = 0;
+  setTheme("default");
+
+  const attemptsHtml = `<div class="attempts" id="attempts">Попыток нажать «Нет»: <b>0</b> из 5</div>`;
+
+  render(
+    "Ты пойдёшь со мной на свидание, да или нет?",
+    `
+      <button onclick="agreementYes()">Да 💚</button>
+      <button id="btn-no" class="secondary" type="button">Нет 💔</button>
+    `,
+    attemptsHtml
+  );
+  setupRunawayButton();
+}
+
+function agreementYes() {
+  state.step = "day";
+  showDateOptions();
+}
+
+function showDateOptions() {
+  setTheme("default");
+  const dates = ["31.10.2026", "01.11.2026"];
+  const buttonsHtml = dates.map(d => {
+    return `
+      <div class="date-option">
+        <span class="date-main">${d}</span>
+        <span class="weather">${weatherData[d]}</span>
+        <button style="margin-top:6px; padding:10px 18px; font-size:0.95rem;"
+                onclick="chooseDay('${d}')">Выбрать эту дату</button>
+      </div>
+    `;
+  }).join("");
+
+  render(
+    "Отличная новость! 😊<br><br>В какие числа ты свободна? (прогноз для Оренбурга)",
+    buttonsHtml
+  );
+}
+
+// --- Убегающая кнопка ---
+function setupRunawayButton() {
+  const btn = document.getElementById("btn-no");
+  const attemptsEl = document.getElementById("attempts");
+  if (!btn) return;
+
+  const updateAttempts = () => {
+    if (attemptsEl) {
+      attemptsEl.innerHTML = `Попыток нажать «Нет»: <b>${state.escapes}</b> из 5`;
+    }
+  };
+
+  const escape = (e) => {
+    if (e) e.preventDefault();
+
+    if (state.escapes >= 5) {
+      btn.textContent = "Ладно, уговорил 😅";
+      btn.classList.remove("floating");
+      btn.style.left = "";
+      btn.style.top = "";
+      btn.onclick = () => {
+        alert("Правильный ответ всё равно «Да»! 😄");
+      };
+      return;
+    }
+
+    state.escapes++;
+    updateAttempts();
+
+    const cardRect = card.getBoundingClientRect();
+    const btnRect = btn.getBoundingClientRect();
+
+    if (!btn.classList.contains("floating")) {
+      btn.style.left = (btnRect.left - cardRect.left) + "px";
+      btn.style.top = (btnRect.top - cardRect.top) + "px";
+      btn.classList.add("floating");
+    }
+
+    const maxX = card.clientWidth - btn.offsetWidth - 16;
+    const maxY = card.clientHeight - btn.offsetHeight - 16;
+
+    btn.style.left = Math.max(8, Math.random() * maxX) + "px";
+    btn.style.top = Math.max(8, Math.random() * maxY) + "px";
+
+    if (state.escapes >= 5) {
+      setTimeout(() => {
+        btn.textContent = "Ладно, уговорил 😅";
+        btn.classList.remove("floating");
+        btn.style.left = "";
+        btn.style.top = "";
+        btn.onclick = () => {
+          alert("Правильный ответ всё равно «Да»! 😄");
+        };
+      }, 300);
+    }
+  };
+
+  btn.addEventListener("mouseenter", escape);
+  btn.addEventListener("touchstart", escape, { passive: false });
+  btn.addEventListener("click", escape);
+}
+
+// --- Даты ---
+function chooseDay(day) {
+  state.answers.day = day;
+  state.step = "place";
+  setTheme("default");
+  render(
+    `Отлично, значит <b>${day}</b>! ✅<br><br>Куда пойдём?`,
+    `
+      <button onclick="choosePlace('restaurant')">🍽️ Ресторан</button>
+      <button class="secondary" onclick="choosePlace('park')">🌳 Прогулка по парку</button>
+    `
+  );
+}
+
+// --- Место ---
+function choosePlace(place) {
+  if (place === "restaurant") {
+    state.answers.place = "Ресторан";
+    state.step = "cuisine";
+    setTheme("romantic");
+    render(
+      "Отличный выбор! 🍽️<br><br>Выбирай направление кухни:",
+      `
+        <button onclick="chooseCuisine('Италия')">🍝 Италия</button>
+        <button onclick="chooseCuisine('Грузия')">🥟 Грузия</button>
+        <button onclick="chooseCuisine('Азия')">🍜 Азия</button>
+        <button class="secondary" onclick="chooseCuisine('Общая')">🍽️ Общая</button>
+      `
+    );
+  } else {
+    state.answers.place = "Прогулка по парку";
+    state.step = "park";
+    setTheme("forest");
+    render(
+      "Отличный выбор — прогулка по парку! 🌳<br>Возьму плед и что-нибудь вкусное для пикника 🧺<br><br>Какой парк выберем?",
+      `
+        <button onclick="choosePark('Набережная')">🌊 Набережная</button>
+        <button onclick="choosePark('Советская')">🌲 Советская</button>
+        <button class="secondary" onclick="choosePark('Ивушки')">🌿 Ивушки</button>
+      `
+    );
+  }
+}
+
+function choosePark(park) {
+  state.answers.park = park;
+  state.step = "time";
+  setTheme("forest");
+  const parkMessages = {
+    "Набережная": "Отлично, Набережная — красиво и ветерок! 🌊",
+    "Советская": "Советская — уютно и зелено! 🌲",
+    "Ивушки": "Ивушки — романтично и тихо! 🌿",
+  };
+  render(
+    `${parkMessages[park]}<br><br>Когда тебе удобнее?`,
+    timeButtons()
+  );
+}
+
+function chooseCuisine(cuisine) {
+  state.answers.cuisine = cuisine;
+  const restaurants = {
+    "Италия": "Chilini 🍝",
+    "Грузия": "Танцевули, Хинкальная на Поляничко, Nino Vano 🥟",
+    "Азия": "Честно, таких не знаю 😅",
+    "Общая": "Счастье радость, Хорошая компания и т.д. 🍽️",
+  };
+  state.step = "time";
+  setTheme("romantic");
+  render(
+    `Рестораны: <b>${restaurants[cuisine]}</b><br><br>Когда тебе удобнее?`,
+    timeButtons()
+  );
+}
+
+function timeButtons() {
+  return `
+    <button onclick="chooseTime('Обеденное время')">🕐 Обеденное время</button>
+    <button class="secondary" onclick="chooseTime('Вечернее время')">🌆 Вечернее время</button>
+  `;
+}
+
+function chooseTime(time) {
+  state.answers.time = time;
+  state.step = "transport";
+  // Тема сохраняется в зависимости от места
+  if (state.answers.place === "Ресторан") setTheme("romantic");
+  else setTheme("forest");
+  render(
+    `Отлично, значит встречаемся в <b>${time.toLowerCase()}</b>!<br><br>Как добираться?`,
+    `
+      <button onclick="chooseTransport('На машине')">🚗 На машине</button>
+      <button class="secondary" onclick="chooseTransport('На такси')">🚕 На такси</button>
+    `
+  );
+}
+
+function chooseTransport(transport) {
+  state.answers.transport = transport;
+  state.step = "more";
+  if (state.answers.place === "Ресторан") setTheme("romantic");
+  else setTheme("forest");
+  render(
+    `Тогда поедем ${transport.toLowerCase()}! 🚗<br><br>Хочешь выбрать ещё что-нибудь?`,
+    `
+      <button onclick="moreYes()">✅ Да, ещё</button>
+      <button class="secondary" onclick="moreNo()">🏁 Нет, хватит</button>
+    `
+  );
+}
+
+function moreYes() {
+  state.step = "place";
+  delete state.answers.place;
+  delete state.answers.park;
+  delete state.answers.cuisine;
+  setTheme("default");
+  render(
+    "Хорошо, давай ещё раз. Куда пойдём?",
+    `
+      <button onclick="choosePlace('restaurant')">🍽️ Ресторан</button>
+      <button class="secondary" onclick="choosePlace('park')">🌳 Прогулка по парку</button>
+    `
+  );
+}
+
+function moreNo() {
+  state.step = "done";
+  if (state.answers.place === "Ресторан") setTheme("romantic");
+  else setTheme("forest");
+  renderResult();
+}
+
+function restart() {
+  state.step = "agreement";
+  state.answers = {};
+  state.escapes = 0;
+  setTheme("default");
+  showAgreement();
+}
+
+// --- Сохранение ---
+function saveAnswers() {
+  const record = {
+    timestamp: new Date().toISOString(),
+    ...state.answers,
+  };
+  try {
+    const existing = JSON.parse(localStorage.getItem("dateAnswers") || "[]");
+    existing.push(record);
+    localStorage.setItem("dateAnswers", JSON.stringify(existing));
+  } catch (e) {
+    console.warn("localStorage недоступен:", e);
+  }
+}
+
+// --- Сердечки ---
+function createHearts() {
+  const container = document.getElementById("hearts");
+  const emojis = ["💖", "💕", "💗", "🌹", "✨"];
+  for (let i = 0; i < 18; i++) {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    heart.style.left = Math.random() * 100 + "%";
+    heart.style.animationDelay = Math.random() * 6 + "s";
+    heart.style.animationDuration = (5 + Math.random() * 4) + "s";
+    heart.style.fontSize = (16 + Math.random() * 18) + "px";
+    container.appendChild(heart);
+  }
+}
+
+// --- Старт ---
+createHearts();
+showAgreement();
+</script>
+</body>
+</html>
